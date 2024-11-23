@@ -1,17 +1,34 @@
-const sendSuccessResponse = ({ res, statusCode = 200, message = "", data = {} }) => {
-  return res.status(statusCode).json({
+const sendSuccessResponse = ({
+  res,
+  status = 200,
+  message = 'Operation successfully executed!',
+  data = {},
+}) => {
+  return res.status(status).json({
     success: true,
-    statusCode,
+    status,
     message,
-    data
-  })
-}
+    data,
+  });
+};
 
-const sendErrorResponse = ({ res, statusCode = 500, message = "", error = {}, }) => {
-  return res.status(statusCode).json({
+const sendErrorResponse = ({
+  res,
+  status = 500,
+  message = 'Fail to execute operation!',
+  error = {},
+}) => {
+  let errorMessage = message;
+  if (error?.name === 'SequelizeUniqueConstraintError') {
+    errorMessage = error.errors[0].message;
+  }
+
+  return res.status(status).json({
     success: false,
-    statusCode,
-    message,
-    error
-  })
-}
+    status,
+    message: errorMessage,
+    error,
+  });
+};
+
+module.exports = { sendSuccessResponse, sendErrorResponse };
